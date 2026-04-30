@@ -1,0 +1,14 @@
+{
+  "name": "ALMA IA",
+  "short_name": "ALMA IA",
+  "description": "Tu oráculo personal de Cábala, Astrología e IA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050510",
+  "theme_color": "#050510",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

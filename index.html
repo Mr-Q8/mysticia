@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>ALMA IA | El Espejo de tu Destino</title>
+<meta name="description" content="Cábala, Astrología e Inteligencia Artificial al servicio de tu alma.">
+<meta name="theme-color" content="#050510">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cosmos"></canvas>
+
+<!-- ══ INTRO ══ -->
+<div id="s-intro" class="screen active">
+  <div class="intro-content">
+    <h1 class="intro-logo shimmer-text">ALMA IA</h1>
+    <p class="intro-sub">El Espejo de tu Destino</p>
+    <p class="intro-text">
+      A lo largo de los milenios, la humanidad ha mirado a las estrellas buscando su propósito.
+      Combinando la antigua sabiduría de la <strong>Cábala</strong>, la <strong>Astrología</strong> ancestral
+      y avanzados algoritmos de <strong>Inteligencia Artificial</strong>, hemos creado un espejo exacto para tu alma.
+      <br><br>
+      Descubre el patrón oculto de tu destino. Rompe las cadenas de tus bloqueos pasados y atrae
+      la abundancia, el amor y la claridad que mereces experimentar en esta vida.
+    </p>
+    <button id="btn-start" class="btn-main float-anim">COMENZAR EL DESPERTAR</button>
+    <p class="legal">
+      <strong>Aviso Científico y Legal:</strong> Esta experiencia fusiona hechos matemáticos, planetarios y arquetipos universales con fines exclusivos de entretenimiento, introspección e inspiración personal. No reemplaza la asistencia médica, psicológica, financiera ni legal de profesionales certificados.
+    </p>
+  </div>
+</div>
+
+<!-- ══ AUTH ══ -->
+<div id="s-auth" class="screen">
+  <div class="auth-box" style="margin:auto;margin-top:40px;margin-bottom:40px;">
+    <div class="auth-logo">ALMA IA</div>
+    <div class="auth-tagline">TU PORTAL ASTRAL</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="auth-tab-login" onclick="showAuthTab('login')">ENTRAR</button>
+      <button class="auth-tab" id="auth-tab-register" onclick="showAuthTab('register')">INICIAR</button>
+    </div>
+    <div id="login-form">
+      <div class="auth-error" id="login-error"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn-main" onclick="doLogin()" style="margin-top:8px;">ENTRAR AL ORÁCULO</button>
+      <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--dim);">¿Primera vez? <span onclick="showAuthTab('register')" style="color:var(--purple-l);cursor:pointer;">Crea tu perfil astral</span></p>
+    </div>
+    <div id="register-form" style="display:none;">
+      <div class="auth-error" id="register-error"></div>
+      <div class="form-group"><label>Nombre completo *</label><input type="text" id="reg-name" placeholder="Tu nombre"></div>
+      <div class="form-group"><label>Email *</label><input type="email" id="reg-email" placeholder="tu@email.com"></div>
+      <div class="form-group"><label>Contraseña * (mín. 6 caracteres)</label><input type="password" id="reg-pass" placeholder="Tu contraseña mística"></div>
+      <div class="form-group"><label>Fecha de nacimiento *</label><input type="date" id="reg-birth"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Hora de nacimiento</label><input type="time" id="reg-time"></div>
+        <div class="form-group"><label>Ciudad natal</label><input type="text" id="reg-city" placeholder="Ciudad"></div>
+      </div>
+      <button class="btn-main" onclick="doRegister()" style="margin-top:8px;">INICIAR MI DESPERTAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="s-main" class="screen">
+  <header class="main-header">
+    <div class="header-logo">✦ ALMA IA</div>
+    <div id="user-name-header" class="header-user"></div>
+    <button class="btn-logout" onclick="logout()">Salir</button>
+  </header>
+  <div class="trial-bar" id="trial-info"></div>
+
+  <div class="app-body">
+
+    <!-- WIDGETS ROW: clima + signo -->
+    <div style="text-align:center;margin:16px 0 8px;">
+      <div class="sign-badge" id="user-sign-badge"></div>
+    </div>
+    <div class="widgets-row" id="widgets-row">
+      <div class="wdg" id="weather-wdg">
+        <div class="wdg-icon">🌐</div>
+        <div class="wdg-val" id="weather-temp">--</div>
+        <div class="wdg-label" id="weather-city">Detectando...</div>
+      </div>
+      <div class="wdg" id="weather-wdg2">
+        <div class="wdg-icon" id="weather-icon">⏳</div>
+        <div class="wdg-val" id="weather-desc" style="font-size:11px;">Clima</div>
+        <div class="wdg-label" id="weather-day">Hoy</div>
+      </div>
+      <div class="wdg">
+        <div class="wdg-icon">🌙</div>
+        <div class="wdg-val" id="moon-phase-wdg">--</div>
+        <div class="wdg-label">Luna</div>
+      </div>
+    </div>
+
+    <!-- HORÓSCOPO AUTO-WIDGET -->
+    <div class="horo-auto" id="horo-auto-widget" style="display:none;">
+      <div class="horo-auto-sign" id="horo-auto-sign">♈ ARIES · HOY</div>
+      <div class="horo-auto-text" id="horo-auto-text">Cargando tu horóscopo...</div>
+      <div class="horo-auto-summary" id="horo-auto-summary"></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-tarot" onclick="switchTab('tarot')">🔮 TAROT</button>
+      <button class="tab-btn" id="tab-natal" onclick="switchTab('natal')">⭐ NATAL</button>
+      <button class="tab-btn" id="tab-suenos" onclick="switchTab('suenos')">🌙 SUEÑOS</button>
+      <button class="tab-btn" id="tab-horoscopo" onclick="switchTab('horoscopo')">🌟 HORO</button>
+      <button class="tab-btn" id="tab-codigo" onclick="switchTab('codigo')">🔑 CÓDIGO</button>
+    </div>
+
+    <!-- PANEL: TAROT -->
+    <div id="panel-tarot" class="panel active">
+      <div class="card">
+        <div class="card-title">ORÁCULO DEL TAROT</div>
+        <div class="card-subtitle">UNA CARTA DIARIA · SABIDURÍA ETERNA</div>
+        <div class="tarot-wrap">
+          <div class="tarot-card-el glow-anim">
+            <img id="card-img" src="tarot/tarot_card_back_1777262050422.png" alt="Carta del Tarot">
+          </div>
+        </div>
+        <div id="card-name" class="card-name">Haz clic para revelar tu carta</div>
+        <button id="tarot-btn" class="btn-secondary" onclick="drawTarotCard()">🔮 Consultar el Tarot</button>
+        <div class="loader" id="tarot-loader"></div>
+        <div id="tarot-result" class="ia-response"></div>
+        <div id="tarot-summary-box" class="tarot-summary" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: NATAL -->
+    <div id="panel-natal" class="panel">
+      <div class="card">
+        <div class="card-title">CARTA NATAL ETERNA</div>
+        <div class="card-subtitle">TU MAPA ESTELAR PERMANENTE</div>
+        <div id="natal-content"></div>
+        <button id="natal-btn" class="btn-secondary" onclick="generateNatal()" style="display:none;">⭐ Generar mi Carta Natal</button>
+        <div class="loader" id="natal-loader"></div>
+        <div id="natal-result" class="ia-response"></div>
+      </div>
+
+      <!-- CARRUSEL ASTRAL -->
+      <div class="card" id="carousel-card" style="display:none;">
+        <div class="card-title">MAPA ASTRAL VISUAL</div>
+        <div class="card-subtitle">DESLIZA · DESCARGA · COMPARTE</div>
+        <div class="astral-carousel" id="astral-carousel">
+          <!-- Cards generadas dinámicamente por JS -->
+        </div>
+        <div class="carousel-dots" id="carousel-dots"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button class="btn-secondary" onclick="downloadAstralCard()" style="flex:1;">⬇️ Descargar Carta</button>
+          <button class="btn-secondary" onclick="downloadFullChart()" style="flex:1;">📜 Mapa Completo</button>
+        </div>
+        <canvas id="astral-canvas" style="display:none;"></canvas>
+      </div>
+    </div>
+
+    <!-- PANEL: SUEÑOS -->
+    <div id="panel-suenos" class="panel">
+      <div class="card">
+        <div class="card-title">ORÁCULO DE SUEÑOS</div>
+        <div class="card-subtitle">UNA INTERPRETACIÓN DIARIA</div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Describe tu sueño de esta noche</label>
+          <textarea id="dream-text" class="dream-input" placeholder="Cuéntame tu sueño con todos los detalles... ¿Qué viste? ¿Qué sentiste? ¿Había personas conocidas? ¿Colores, lugares, símbolos?"></textarea>
+        </div>
+        <button id="dream-btn" class="btn-secondary" onclick="interpretDream()">🌙 Interpretar mi Sueño</button>
+        <div class="loader" id="dream-loader"></div>
+        <div id="dream-result" class="ia-response"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: HORÓSCOPO -->
+    <div id="panel-horoscopo" class="panel">
+      <div class="card">
+        <div class="card-title">HORÓSCOPO CUÁNTICO</div>
+        <div class="card-subtitle">TU DESTINO ASTRAL HOY</div>
+        <div class="form-group">
+          <label>Signo Zodiacal</label>
+          <select id="horo-sign" class="sign-select">
+            <option value="Aries">♈ Aries</option><option value="Tauro">♉ Tauro</option>
+            <option value="Géminis">♊ Géminis</option><option value="Cáncer">♋ Cáncer</option>
+            <option value="Leo">♌ Leo</option><option value="Virgo">♍ Virgo</option>
+            <option value="Libra">♎ Libra</option><option value="Escorpio">♏ Escorpio</option>
+            <option value="Sagitario">♐ Sagitario</option><option value="Capricornio">♑ Capricornio</option>
+            <option value="Acuario">♒ Acuario</option><option value="Piscis">♓ Piscis</option>
+          </select>
+        </div>
+        <button id="horo-btn" class="btn-secondary" onclick="getHoroscope()">⭐ Ver mi Destino Hoy</button>
+        <div class="loader" id="horo-loader"></div>
+        <div id="horo-result" class="ia-response"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: CÓDIGO VITAL -->
+    <div id="panel-codigo" class="panel">
+
+      <!-- GUÍA LIBRE -->
+      <div class="card">
+        <div class="card-title">CÓDIGO VITAL</div>
+        <div class="card-subtitle">TU GUÍA DE PROPÓSITO E INTEGRACIÓN</div>
+        <div class="form-group">
+          <label>¿Qué necesitas explorar hoy?</label>
+          <textarea id="guia-input" class="guia-input" placeholder="Cuéntame lo que sientes, lo que te preocupa, tu relación, tu propósito, tus miedos, tus sueños de vida... Sin filtros. Esto es tu espacio sagrado."></textarea>
+        </div>
+        <button id="guia-btn" class="btn-secondary" onclick="askGuia()">🔑 Activar mi Código Vital</button>
+        <div class="loader" id="guia-loader"></div>
+        <div id="guia-result" class="ia-response"></div>
+      </div>
+
+      <!-- RADIOGRAFÍA CABALÍSTICA -->
+      <div class="card">
+        <div class="card-title">RADIOGRAFÍA CABALÍSTICA</div>
+        <div class="card-subtitle">ANÁLISIS NUMEROLÓGICO PROFUNDO</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre completo *</label>
+            <input type="text" id="radio-name" placeholder="Tu nombre completo">
+          </div>
+          <div class="form-group">
+            <label>Fecha de nacimiento *</label>
+            <input type="date" id="radio-birth">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hora de nacimiento</label>
+            <input type="time" id="radio-time">
+          </div>
+          <div class="form-group">
+            <label>Lugar de nacimiento</label>
+            <input type="text" id="radio-place" placeholder="Ciudad">
+          </div>
+        </div>
+        <button id="radio-btn" class="btn-secondary" onclick="doRadiografia()">✡️ Generar mi Radiografía</button>
+        <div class="loader" id="radio-loader"></div>
+        <div id="radio-nums" class="radio-nums" style="display:none;"></div>
+        <div id="radio-fields" class="radio-fields" style="display:none;"></div>
+        <div id="radio-result" class="ia-response"></div>
+        <div id="radio-scenes" class="scenes-container" style="display:none;"></div>
+      </div>
+
+    </div><!-- panel-codigo -->
+
+  </div><!-- app-body -->
+</div><!-- s-main -->
+
+<!-- ══ TRIAL EXPIRADO ══ -->
+<div id="s-expired" class="screen">
+  <div class="expired-box" style="margin:auto;margin-top:60px;">
+    <div class="expired-icon">🌌</div>
+    <h2 class="expired-title">Período Astral Completado</h2>
+    <p class="expired-text">Has completado tu período de acceso de <strong>14 días</strong> al Oráculo de ALMA IA. Tu viaje apenas comienza. Contacta al Maestro para renovar tu acceso.</p>
+    <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:16px;padding:20px;margin-bottom:24px;">
+      <p style="font-size:12px;color:var(--dim);letter-spacing:1px;">CONTACTO DEL ORÁCULO</p>
+      <p style="color:var(--gold);font-size:16px;margin-top:8px;">✉️ alma.ia.oraculo@gmail.com</p>
+    </div>
+    <button class="btn-main" onclick="logout()">Volver al Inicio</button>
+  </div>
+</div>
+
+<!-- ══ MODAL CARTA ASTRAL ══ -->
+<div id="astral-modal" class="astral-modal" role="dialog" aria-modal="true" aria-label="Detalle de carta astral">
+  <div class="astral-modal-backdrop" onclick="closeAstralModal()"></div>
+  <div class="astral-modal-box" id="astral-modal-box">
+
+    <!-- Header -->
+    <div class="amod-header">
+      <button class="amod-nav-btn" id="amod-prev" onclick="navigateModal(-1)" aria-label="Anterior">‹</button>
+      <div class="amod-title-wrap">
+        <div class="amod-icon" id="amod-icon"></div>
+        <div>
+          <div class="amod-label" id="amod-label"></div>
+          <div class="amod-title" id="amod-title"></div>
+        </div>
+      </div>
+      <button class="amod-nav-btn" id="amod-next" onclick="navigateModal(1)" aria-label="Siguiente">›</button>
+    </div>
+
+    <!-- Anillo circular -->
+    <div class="amod-ring-section">
+      <div class="amod-ring-wrap">
+        <svg class="amod-ring-svg" viewBox="0 0 140 140">
+          <circle class="amod-ring-bg" cx="70" cy="70" r="60"/>
+          <circle class="amod-ring-fill" id="amod-ring-fill" cx="70" cy="70" r="60"
+            stroke-dasharray="377" style="--dash-total:377;--dash-offset:377;"/>
+        </svg>
+        <div class="amod-ring-inner">
+          <div class="amod-ring-icon" id="amod-ring-icon"></div>
+          <div class="amod-ring-num" id="amod-ring-num"></div>
+          <div class="amod-ring-val" id="amod-ring-val"></div>
+        </div>
+      </div>
+      <div class="amod-badge" id="amod-badge"></div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="amod-body">
+      <div class="amod-phrase" id="amod-phrase"></div>
+      <div class="amod-section">
+        <div class="amod-section-label">SIGNIFICADO</div>
+        <div class="amod-section-text" id="amod-meaning"></div>
+      </div>
+      <div class="amod-section" id="amod-ai-section">
+        <div class="amod-section-label">LECTURA PERSONAL IA</div>
+        <div class="loader" id="amod-loader"></div>
+        <div class="amod-section-text" id="amod-ai-text"></div>
+      </div>
+      <div class="amod-section">
+        <div class="amod-section-label">CONSEJO PRÁCTICO</div>
+        <div class="amod-advice" id="amod-advice"></div>
+      </div>
+    </div>
+
+    <!-- Dots y cerrar -->
+    <div class="amod-footer">
+      <div class="carousel-dots" id="amod-dots"></div>
+      <button class="amod-close-btn" onclick="closeAstralModal()" aria-label="Cerrar">✕ CERRAR</button>
+    </div>
+  </div>
+</div>
+
+<script src="app-core.js"></script>
+<script src="app-features.js"></script>
+<script src="app-carousel.js"></script>
+<script src="app-modal.js"></script>
+</body>
+</html>
