@@ -2,10 +2,11 @@
   "version": 2,
   "functions": {
     "api/chat.js": { "maxDuration": 30 },
-    "api/auth.js": { "maxDuration": 10 }
+    "api/auth.js": { "maxDuration": 10 },
+    "api/imagen.js": { "maxDuration": 35 }
   },
   "env": {
-    "GEMINI_API_KEY": "AIzaSyDjUjTZfftKhZWn2TcPqFSl1E4FM9bouXw",
+    "GEMINI_API_KEY": "AIzaSyBKbAQMEWYz6Sxg2PoNMv2eI5pshyR2reE",
     "GEMINI_API_KEY2": "AIzaSyDkMs54e1zPfbI3k28rzN10ZksgsFl_qDQ",
     "SUPABASE_URL": "https://onslntmfignxllxmcsyk.supabase.co",
     "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uc2xudG1maWdueGxseG1jc3lrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MTA3NjAsImV4cCI6MjA5MzA4Njc2MH0.IXK6UU3HlHd8RGyAZrvVZeMPCcrJiRuozrjQcObpuGA",
