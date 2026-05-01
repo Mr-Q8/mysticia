@@ -23,7 +23,9 @@ export default async function handler(req, res) {
                 });
                 if (ollamaRes.ok) {
                     const data = await ollamaRes.json();
-                    return res.status(200).json({ response: data.response, source: 'ollama' });
+                    if (data.response) {
+                        return res.status(200).json({ response: data.response, source: 'ollama' });
+                    }
                 }
                 console.log(`Ollama falló con status: ${ollamaRes.status}`);
             } catch (e) {
@@ -31,19 +33,17 @@ export default async function handler(req, res) {
             }
         }
 
-        // ── 2. RESPALDO: Gemini 1.5 Flash — cicla entre KEY1 y KEY2 ──
+        // ── 2. RESPALDO: Gemini 2.0 Flash — cicla entre KEY1 y KEY2 ──
         const partsArray = [{ text: systemPersona }];
         if (imageBase64) {
+            const rawBase64 = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
             partsArray.push({
-                inlineData: {
-                    data: imageBase64.split(',')[1] || imageBase64,
-                    mimeType: 'image/jpeg'
-                }
+                inlineData: { data: rawBase64, mimeType: 'image/jpeg' }
             });
         }
 
         const geminiBody = JSON.stringify({ contents: [{ parts: partsArray }] });
-        const geminiModel = 'gemini-1.5-flash';
+        const geminiModel = 'gemini-2.0-flash';
 
         for (const key of [geminiKey1, geminiKey2]) {
             if (!key) continue;
@@ -59,8 +59,8 @@ export default async function handler(req, res) {
                 );
                 if (!gRes.ok) {
                     const errText = await gRes.text();
-                    console.log(`Gemini key fallo (${gRes.status}): ${errText}`);
-                    continue; // intentar con la siguiente key
+                    console.log(`Gemini key falló (${gRes.status}): ${errText.substring(0, 200)}`);
+                    continue;
                 }
                 const data = await gRes.json();
                 const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -72,30 +72,37 @@ export default async function handler(req, res) {
             }
         }
 
-        // ── 3. ÚLTIMO RECURSO: Pollinations / Mistral (solo texto) ──
-        if (!imageBase64) {
-            try {
-                const pollRes = await fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: 'user', content: systemPersona }], model: 'mistral', seed: 42 }),
-                    signal: AbortSignal.timeout(20000)
-                });
-                if (pollRes.ok) {
-                    const pollText = await pollRes.text();
-                    if (pollText) return res.status(200).json({ response: pollText, source: 'pollinations' });
+        // ── 3. ÚLTIMO RECURSO: Pollinations OpenAI-compatible (sin key, gratuito) ──
+        try {
+            const pollRes = await fetch('https://text.pollinations.ai/openai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [
+                        { role: 'system', content: 'Eres ALMA IA, Sabia de la Cábala, Astróloga y Psicóloga Sistémica. Responde en español con profundidad, calidez y exactitud.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    model: 'openai',
+                    seed: Math.floor(Math.random() * 10000)
+                }),
+                signal: AbortSignal.timeout(30000)
+            });
+            if (pollRes.ok) {
+                const pollData = await pollRes.json();
+                const pollText = pollData?.choices?.[0]?.message?.content;
+                if (pollText) {
+                    return res.status(200).json({ response: pollText, source: 'pollinations' });
                 }
-            } catch (e) {
-                console.log(`Pollinations falló: ${e.message}`);
             }
+        } catch (e) {
+            console.log(`Pollinations falló: ${e.message}`);
         }
 
-        // Si es Oráculo y todo falla, lanzar error en lugar de respuesta estática
-        if (type === 'Oraculo') {
-            return res.status(503).json({ error: 'Todos los servicios de IA están temporalmente no disponibles. Intenta de nuevo en unos minutos.' });
-        }
-
-        throw new Error('Todos los proveedores de IA fallaron.');
+        // ── Si absolutamente todo falla ──
+        return res.status(200).json({
+            response: '🌌 Los astros se están realineando. Todos los canales de ALMA están temporalmente saturados. Intenta de nuevo en unos segundos.',
+            source: 'fallback'
+        });
 
     } catch (error) {
         return res.status(200).json({ response: `🚨 Error de Conexión: ${error.message}`, source: 'error' });
