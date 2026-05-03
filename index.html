@@ -8,6 +8,10 @@
 <meta name="theme-color" content="#050510">
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="premium.css">
+<link rel="stylesheet" href="premium-validate.css">
+<link rel="stylesheet" href="assessment-module/assessment.css">
+<link rel="stylesheet" href="evolution.css">
 </head>
 <body>
 <canvas id="cosmos"></canvas>
@@ -110,6 +114,7 @@
       <button class="tab-btn" id="tab-suenos" onclick="switchTab('suenos')">🌙 SUEÑOS</button>
       <button class="tab-btn" id="tab-horoscopo" onclick="switchTab('horoscopo')">🌟 HORO</button>
       <button class="tab-btn" id="tab-codigo" onclick="switchTab('codigo')">🔑 CÓDIGO</button>
+      <button class="tab-btn" id="tab-oraculo" onclick="switchTab('oraculo')">🔮 ORÁCULO</button>
     </div>
 
     <!-- PANEL: TAROT -->
@@ -139,6 +144,9 @@
         <button id="natal-btn" class="btn-secondary" onclick="generateNatal()" style="display:none;">⭐ Generar mi Carta Natal</button>
         <div class="loader" id="natal-loader"></div>
         <div id="natal-result" class="ia-response"></div>
+        <button id="natal-img-btn" class="btn-secondary" onclick="generateNatalImage()" style="display:none;margin-top:16px;">🖼️ Generar Imagen de mi Carta Natal</button>
+        <div class="loader" id="natal-img-loader"></div>
+        <div id="natal-image-container"></div>
       </div>
 
       <!-- CARRUSEL ASTRAL -->
@@ -244,6 +252,24 @@
 
     </div><!-- panel-codigo -->
 
+    <!-- PANEL: EL ORÁCULO (CHAT LIBRE) -->
+    <div id="panel-oraculo" class="panel">
+      <div class="card oraculo-card">
+        <div class="card-title">EL ORÁCULO</div>
+        <div class="card-subtitle">CHAT LIBRE CON ALMA IA</div>
+        <div class="oraculo-messages" id="oraculo-messages">
+          <div class="oraculo-msg oraculo-msg-ia">✨ Soy ALMA IA, tu guía de sabiduría ancestral. Pregúntame sobre tu destino, relaciones, propósito, sueños, energías... Estoy aquí para iluminar tu camino.</div>
+        </div>
+        <div class="oraculo-input-row">
+          <button class="oraculo-icon-btn" id="oraculo-clip-btn" title="Adjuntar" onclick="document.getElementById('oraculo-file').click()">📎</button>
+          <input type="file" id="oraculo-file" hidden accept="image/*">
+          <textarea id="oraculo-input" class="oraculo-input" placeholder="Escribe tu consulta al Oráculo..." rows="1"></textarea>
+          <button class="oraculo-icon-btn" id="oraculo-mic-btn" onclick="toggleOraculoMic()" title="Micrófono">🎙️</button>
+          <button class="oraculo-send-btn" id="oraculo-send-btn" onclick="sendOraculo()">➤</button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- app-body -->
 </div><!-- s-main -->
 
@@ -326,5 +352,21 @@
 <script src="app-features.js"></script>
 <script src="app-carousel.js"></script>
 <script src="app-modal.js"></script>
+<!-- ══ PREMIUM MODULE (independiente) ══ -->
+<script src="premium.js"></script>
+<script src="premium-ui.js"></script>
+<script src="init-premium.js"></script>
+<script src="premium-validate.js"></script>
+<script src="premium-text-patch.js"></script>
+<!-- ══ ASSESSMENT MODULE (independiente) ══ -->
+<script src="assessment-module/assessment-core.js"></script>
+<script src="assessment-module/assessment-engine.js"></script>
+<script src="assessment-module/assessment-ui.js"></script>
+<script src="assessment-module/init-assessment.js"></script>
+<script src="access-codes.js"></script>
+<script src="conversion-patch.js"></script>
+<!-- ══ EVOLUTION MODULE (independiente) ══ -->
+<script src="evolution-engine.js"></script>
+<script src="evolution-push.js"></script>
 </body>
 </html>
